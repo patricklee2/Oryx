@@ -3,6 +3,7 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
+using System;
 using System.IO;
 using System.Net.Http;
 using System.Text;
@@ -15,7 +16,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
 {
     public class PythonEndToEndTests : IClassFixture<TestTempDirTestFixture>
     {
-        private const int HostPort = 8001;
+        private readonly int HostPort = 8000 + new Random().Next(50, 100);
         private const int ContainerPort = 3000;
         private const string DefaultStartupFilePath = "./run.sh";
 
@@ -508,16 +509,11 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                 appName,
                 _output,
                 volume,
-                "oryx",
-                new[] { "build", appDir },
+                "oryx", new[] { "build", appDir },
                 "oryxdevms/python-3.7",
                 portMapping,
                 "/bin/bash",
-                new[]
-                {
-                    "-c",
-                    script
-                },
+                new[] { "-c", script },
                 async () =>
                 {
                     var data = await _httpClient.GetStringAsync($"http://localhost:{HostPort}/");
