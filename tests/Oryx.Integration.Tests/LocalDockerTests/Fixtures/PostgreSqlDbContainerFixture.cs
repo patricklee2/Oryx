@@ -16,7 +16,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests.Fixtures
         protected override DockerRunCommandResult RunDbServerContainer()
         {
             var runDatabaseContainerResult = _dockerCli.Run(
-                    Settings.PostgresDbImageName,
+                    Settings.PostgreSqlDbImageName,
                     environmentVariables: new List<EnvironmentVariable>
                     {
                         new EnvironmentVariable("POSTGRES_DB", Constants.DatabaseName),
