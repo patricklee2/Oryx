@@ -41,9 +41,16 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests.Fixtures
             var retry = Policy.HandleResult(result: false).WaitAndRetry(30, i => TimeSpan.FromSeconds(2));
             return retry.Execute(() =>
             {
-                // Based on https://hub.docker.com/r/mysql/mysql-server/#starting-a-mysql-server-instance
-                string status = _dockerCli.GetContainerStatus(DbServerContainerName);
-                return status.Contains("healthy") && !status.Contains("starting");
+                try
+                {
+                    // Based on https://hub.docker.com/r/mysql/mysql-server/#starting-a-mysql-server-instance
+                    string status = _dockerCli.GetContainerStatus(DbServerContainerName);
+                    return status.Contains("healthy") && !status.Contains("starting");
+                }
+                catch
+                {
+                    return false;
+                }
             });
         }
 

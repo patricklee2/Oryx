@@ -3,13 +3,12 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
-using JetBrains.Annotations;
-using Microsoft.Oryx.Tests.Common;
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Text;
-using System.Threading;
+using JetBrains.Annotations;
+using Microsoft.Oryx.Tests.Common;
+using Newtonsoft.Json;
 
 namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests.Fixtures
 {
@@ -31,11 +30,25 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests.Fixtures
         public DbContainerFixtureBase()
         {
             DbServerContainerName = RunDbServerContainer().ContainerName;
-            if (!WaitUntilDbServerIsUp())
+            var insertedSampleData = false;
+            try
             {
-                throw new Exception("Database not ready in time");
+                var databaseIsUp = WaitUntilDbServerIsUp();
+                if (databaseIsUp)
+                {
+                    InsertSampleData();
+                    insertedSampleData = true;
+                }
             }
-            InsertSampleData();
+            catch (Exception ex)
+            {
+                Console.WriteLine("An error occurred while trying to insert sample data. Exception: " + ex.ToString());
+            }
+
+            if (!insertedSampleData)
+            {
+                StopContainer();
+            }
         }
 
         public string DbServerContainerName { get; }

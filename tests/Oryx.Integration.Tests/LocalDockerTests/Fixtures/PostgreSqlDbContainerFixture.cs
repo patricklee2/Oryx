@@ -38,8 +38,18 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests.Fixtures
         {
             // Try 33 times at most, with a constant 3s in between attempts
             var retry = Policy.HandleResult(result: false).WaitAndRetry(33, i => TimeSpan.FromSeconds(3));
-            return retry.Execute(() => _dockerCli.GetContainerLogs(DbServerContainerName)
-                                                 .Contains("database system is ready to accept connections"));
+            return retry.Execute(() =>
+            {
+                try
+                {
+                    return _dockerCli.GetContainerLogs(DbServerContainerName)
+                    .Contains("database system is ready to accept connections");
+                }
+                catch
+                {
+                    return false;
+                }
+            });
         }
 
         protected override void InsertSampleData()
