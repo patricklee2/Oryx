@@ -3,13 +3,12 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
-using JetBrains.Annotations;
-using Microsoft.Oryx.Tests.Common;
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Text;
-using System.Threading;
+using JetBrains.Annotations;
+using Microsoft.Oryx.Tests.Common;
+using Newtonsoft.Json;
 
 namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests.Fixtures
 {
@@ -31,11 +30,31 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests.Fixtures
         public DbContainerFixtureBase()
         {
             DbServerContainerName = RunDbServerContainer().ContainerName;
-            if (!WaitUntilDbServerIsUp())
+
+            bool insertedSampleData = false;
+            try
             {
-                throw new Exception("Database not ready in time");
+                var isDbServerUp = WaitUntilDbServerIsUp();
+                if (isDbServerUp)
+                {
+                    InsertSampleData();
+                    insertedSampleData = true;
+                }
             }
-            InsertSampleData();
+            catch (Exception ex)
+            {
+                // Since Dispose method does not get called in case of exceptions, catch the exception here, log it
+                // and stop the container.
+                Console.WriteLine("Exception occurred while setting up the database container: " + ex.ToString());
+            }
+
+            if (!insertedSampleData)
+            {
+                Console.WriteLine("Stopping the container...");
+                StopContainer();
+
+                throw new InvalidOperationException("Failed to setup database container for tests.");
+            }
         }
 
         public string DbServerContainerName { get; }
