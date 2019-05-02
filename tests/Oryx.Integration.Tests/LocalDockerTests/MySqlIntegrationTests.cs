@@ -35,9 +35,9 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
 
         [Theory]
         [InlineData("7.3")]
-        [InlineData("7.2")]
-        [InlineData("7.0")]
-        [InlineData("5.6")]
+        //[InlineData("7.2")]
+        //[InlineData("7.0")]
+        //[InlineData("5.6")]
         public async Task PhpApp_UsingMysqli(string phpVersion)
         {
             await RunTestAsync(

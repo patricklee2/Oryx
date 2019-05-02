@@ -32,7 +32,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
 
         [Theory]
         [InlineData("7.3")]
-        [InlineData("7.2")]
+        //[InlineData("7.2")]
         // pdo_sqlsrv only supports PHP >= 7.1
         public async Task PhpApp_UsingPdo(string phpVersion)
         {
