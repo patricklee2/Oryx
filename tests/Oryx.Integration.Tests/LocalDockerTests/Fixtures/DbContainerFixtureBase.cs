@@ -53,6 +53,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests.Fixtures
                 Console.WriteLine("Stopping the container...");
                 StopContainer();
 
+                // Throw exception here so that tests that depend on this fixture do not run.
                 throw new InvalidOperationException("Failed to setup database container for tests.");
             }
         }
